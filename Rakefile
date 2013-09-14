@@ -6,6 +6,16 @@ end
 
 require 'rdoc/task'
 
+begin
+  require 'rspec/core/rake_task'
+  desc "Run RSpec"
+  RSpec::Core::RakeTask.new do |t|
+    t.verbose = false
+  end
+rescue LoadError
+  puts "Please run bundle install"
+end
+
 RDoc::Task.new(:rdoc) do |rdoc|
   rdoc.rdoc_dir = 'rdoc'
   rdoc.title    = 'BootstrapPagedown'
@@ -14,8 +24,6 @@ RDoc::Task.new(:rdoc) do |rdoc|
   rdoc.rdoc_files.include('lib/**/*.rb')
 end
 
-
-
+task default: :spec
 
 Bundler::GemHelper.install_tasks
-

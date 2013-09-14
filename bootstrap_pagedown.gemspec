@@ -11,13 +11,12 @@ Gem::Specification.new do |s|
   s.email       = ["enrique@cloverinteractive.com"]
   s.homepage    = "https://github.com/cloverinteractive/bootstrap_pagedown"
 
-  s.summary     = "Summary of BootstrapPagedown."
-  s.description = "Description of BootstrapPagedown."
+  s.summary     = "Bootstrap Pagedown for Rails."
+  s.description = "It's Bootstrap Pagedown for the Rails asset pipeline."
 
   s.files = Dir["{app,config,db,lib}/**/*", "MIT-LICENSE", "Rakefile", "README.rdoc"]
 
   s.required_ruby_version = '>= 1.9.2'
 
-  s.add_dependency "rails", "~> 4.0.0"
-  s.add_dependency 'bootstrap-sass'
+  s.add_dependency "rails", ">= 3.2"
 end
