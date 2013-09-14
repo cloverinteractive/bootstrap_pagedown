@@ -138,6 +138,7 @@ PLATFORMS
 
 DEPENDENCIES
   better_errors
+  bootstrap-sass
   bootstrap_pagedown!
   coffee-rails (~> 4.0.0)
   factory_girl
