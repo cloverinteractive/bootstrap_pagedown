@@ -1,4 +1,5 @@
 # Bootstrap Pagedown
+[![Build Status](https://secure.travis-ci.org/cloverinteractive/bootstrap_pagedown.png?branch=master)](http://travis-ci.org/cloverinteractive/bootstrap_pagedown)
 
 It's a rails version of Bootstrap Pagedown with it's own form builder.
 
