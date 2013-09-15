@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    bootstrap_pagedown (1.0.0)
+    bootstrap_pagedown (1.0.1)
       rails (>= 3.2)
 
 GEM
