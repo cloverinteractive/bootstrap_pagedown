@@ -1,0 +1,6 @@
+language: ruby
+script:
+  - "bundle exec rake spec"
+rvm:
+  - 1.9.2
+  - 2.0.0
