@@ -1,0 +1,110 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Bootstrap pagedown by cloverinteractive</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Bootstrap pagedown</h1>
+        <p>Bootstrap Pagedown for rails</p>
+
+        <p class="view"><a href="https://github.com/cloverinteractive/bootstrap_pagedown">View the Project on GitHub <small>cloverinteractive/bootstrap_pagedown</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/cloverinteractive/bootstrap_pagedown/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/cloverinteractive/bootstrap_pagedown/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/cloverinteractive/bootstrap_pagedown">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>
+<a name="bootstrap-pagedown" class="anchor" href="#bootstrap-pagedown"><span class="octicon octicon-link"></span></a>Bootstrap Pagedown</h1>
+
+<p><a href="http://travis-ci.org/cloverinteractive/bootstrap_pagedown"><img src="https://secure.travis-ci.org/cloverinteractive/bootstrap_pagedown.png?branch=master" alt="Build Status"></a></p>
+
+<p>It's a rails version of Bootstrap Pagedown with it's own form builder.</p>
+
+<h2>
+<a name="setup" class="anchor" href="#setup"><span class="octicon octicon-link"></span></a>Setup</h2>
+
+<p>Add it to your Gemfile then run <code>bundle</code> to install it.</p>
+
+<div class="highlight highlight-ruby"><pre><span class="n">gem</span> <span class="s2">"bootstrap_pagedown"</span>
+</pre></div>
+
+<p>Then add it to your Asset Pipeline manifest files:</p>
+
+<div class="highlight highlight-javascript"><pre><span class="c1">// application.js</span>
+<span class="c1">//= require bootstrap_pagedown</span>
+</pre></div>
+
+<div class="highlight highlight-css"><pre><span class="c">/*</span>
+<span class="c">* application.css</span>
+<span class="c">*= require bootstrap_pagedown</span>
+<span class="c">*/</span>
+</pre></div>
+
+<h2>
+<a name="requirements" class="anchor" href="#requirements"><span class="octicon octicon-link"></span></a>Requirements</h2>
+
+<p>This plugin requires bootstrap to work as intended.</p>
+
+<h2>
+<a name="form-builder" class="anchor" href="#form-builder"><span class="octicon octicon-link"></span></a>Form builder</h2>
+
+<p>To use with rails form simply do the following:</p>
+
+<div class="highlight highlight-erb"><pre><span class="cp">&lt;%=</span> <span class="n">form_for</span> <span class="vi">@page</span> <span class="k">do</span> <span class="o">|</span><span class="n">f</span><span class="o">|</span> <span class="cp">%&gt;</span><span class="x"></span>
+<span class="x">  </span><span class="cp">&lt;%=</span> <span class="n">f</span><span class="o">.</span><span class="n">pagedown_editor</span> <span class="ss">:body</span>
+<span class="x">&lt;% end </span><span class="err">%&gt;</span><span class="x"></span>
+</pre></div>
+
+<p>This will generate the necessary HTML to render the Markdown editor for the <code>body</code> property of our <code>Page</code> model.</p>
+
+<p>You may also add attributes to the generated text area as needed by simply adding them after the method name:</p>
+
+<div class="highlight highlight-erb"><pre><span class="cp">&lt;%=</span> <span class="n">f</span><span class="o">.</span><span class="n">pagedown_editor</span> <span class="ss">:body</span><span class="p">,</span> <span class="s1">'data-name'</span> <span class="o">=&gt;</span> <span class="s1">'editor'</span>
+</pre></div>
+
+<p>The previous example would add <code>data-name="editor"</code> to the editor textarea element.</p>
+
+<h3>
+<a name="note" class="anchor" href="#note"><span class="octicon octicon-link"></span></a>Note</h3>
+
+<p>You should only use one editor per page since <code>Pagedown</code>'s Javascript relies on the HTML id attribute for most of it's behavior.</p>
+
+<h2>
+<a name="running-the-test-suite" class="anchor" href="#running-the-test-suite"><span class="octicon octicon-link"></span></a>Running the test suite</h2>
+
+<p>Simply clone this project (or pull) and then run <code>rake</code></p>
+
+<h2>
+<a name="running-the-dummy-app" class="anchor" href="#running-the-dummy-app"><span class="octicon octicon-link"></span></a>Running the dummy app</h2>
+
+<p>Go into the <code>spec/dummy</code> directory and run <code>rails s</code> then in your web browser visit <code>http://localhost:3000</code>, you should see a blank page with the editor.</p>
+
+<h2>
+<a name="license" class="anchor" href="#license"><span class="octicon octicon-link"></span></a>License</h2>
+
+<p>This project uses the MIT license, please read the <code>MIT-LICENSE</code> file included with this project</p>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/cloverinteractive">cloverinteractive</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>
