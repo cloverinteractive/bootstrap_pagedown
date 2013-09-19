@@ -80,9 +80,47 @@
 <p>The previous example would add <code>data-name="editor"</code> to the editor textarea element.</p>
 
 <h3>
-<a name="note" class="anchor" href="#note"><span class="octicon octicon-link"></span></a>Note</h3>
+<a name="custom-options-supported" class="anchor" href="#custom-options-supported"><span class="octicon octicon-link"></span></a>Custom options supported:</h3>
 
-<p>You should only use one editor per page since <code>Pagedown</code>'s Javascript relies on the HTML id attribute for most of it's behavior.</p>
+<p>By default bootstrap_pagedown will create the needed HTML elements to render a functional editor with a button bar and a preview div.
+However you can change the different element classes, ids and even skip the preview div by passing different options to the <code>pagedown_editor</code>
+method, here's the hash with different options and it's default values:</p>
+
+<div class="highlight highlight-ruby"><pre><span class="p">{</span>
+  <span class="n">skip_preview</span><span class="p">:</span>     <span class="kp">false</span><span class="p">,</span>             <span class="c1"># Whether or not we should skip the preview div, skipping this will render an editor without HTML preview</span>
+  <span class="n">panel_id</span><span class="p">:</span>         <span class="s1">''</span><span class="p">,</span>                <span class="c1"># HTML id of the editor panel div</span>
+  <span class="n">panel_class</span><span class="p">:</span>      <span class="s1">'wmd-panel'</span><span class="p">,</span>       <span class="c1"># HTML class of the editor panel div</span>
+  <span class="n">button_bar_id</span><span class="p">:</span>    <span class="s1">'wmd-button-bar'</span><span class="p">,</span>  <span class="c1"># HTML id of the editor's button bar div</span>
+  <span class="n">button_bar_class</span><span class="p">:</span> <span class="s1">''</span><span class="p">,</span>                <span class="c1"># HTML class of the editor's button bar div</span>
+  <span class="n">editor_id</span><span class="p">:</span>        <span class="s1">'wmd-input'</span><span class="p">,</span>       <span class="c1"># HTML if of the editor textarea</span>
+  <span class="n">editor_class</span><span class="p">:</span>     <span class="s1">'wmd-input'</span><span class="p">,</span>       <span class="c1"># HTML class of the editor textarea</span>
+  <span class="n">preview_id</span><span class="p">:</span>       <span class="s1">'wmd-preview'</span><span class="p">,</span>     <span class="c1"># HTML id of the preview div</span>
+  <span class="n">preview_class</span><span class="p">:</span>    <span class="s1">''</span><span class="p">,</span>                <span class="c1"># HTML class of the preview div</span>
+<span class="p">}</span>
+</pre></div>
+
+<p>This is a the default generated HTML, note that name will change depending on your form builder and method name.</p>
+
+<div class="highlight highlight-html"><pre><span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"wmd-panel"</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">"wmd-button-bar"</span><span class="nt">&gt;&lt;/div&gt;</span>
+  <span class="nt">&lt;textarea</span> <span class="na">class=</span><span class="s">"wmd-input"</span> <span class="na">id=</span><span class="s">"wmd-input"</span> <span class="na">name=</span><span class="s">"test[test]"</span><span class="nt">&gt;&lt;/textarea&gt;</span>
+  <span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">"wmd-preview"</span><span class="nt">&gt;&lt;/div&gt;</span>
+<span class="nt">&lt;/div&gt;</span>
+</pre></div>
+
+<p>If you change the any of the default ids or classes on the HTML elements the <code>pagedown_editor</code> will render the correct HTML, but the editor won't render
+that is because by default Pagedown looks for those element attribute values, however you can still get the editor to render and behave correctly through the
+<a href="https://code.google.com/p/pagedown/wiki/PageDown">Pagedown API</a>. I other words in order to have more than one editor in the same page you'll obviously have to
+change the element attributes and the use the Pagedown API to create every aditional editor.</p>
+
+<h2>
+<a name="stylesheets" class="anchor" href="#stylesheets"><span class="octicon octicon-link"></span></a>Stylesheets</h2>
+
+<p>If you need to change something on the stylesheets you don't need to start from scratch, you can simply generate the sass file with the sass generator as follows:</p>
+
+<p><code>rails g bootstrap_pagedown:sass</code></p>
+
+<p>This will generate a copy of bootstrap_pagedown styles into <code>app/assets/stylesheets</code>.</p>
 
 <h2>
 <a name="running-the-test-suite" class="anchor" href="#running-the-test-suite"><span class="octicon octicon-link"></span></a>Running the test suite</h2>
