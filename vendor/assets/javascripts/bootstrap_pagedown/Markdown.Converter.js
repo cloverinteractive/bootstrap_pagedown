@@ -4,7 +4,7 @@ if (typeof exports === "object" && typeof require === "function") // we're in a 
     Markdown = exports;
 else
     Markdown = {};
-    
+
 // The following text is included for historical reasons, but should
 // be taken with a pinch of salt; it's not all true anymore.
 
@@ -67,7 +67,11 @@ else
             if (original === identity)
                 this[hookname] = func;
             else
-                this[hookname] = function (x) { return func(original(x)); }
+                this[hookname] = function (text) {
+                    var args = Array.prototype.slice.call(arguments, 0);
+                    args[0] = original.apply(null, args);
+                    return func.apply(null, args);
+                };
         },
         set: function (hookname, func) {
             if (!this[hookname])
@@ -103,9 +107,28 @@ else
 
     Markdown.Converter = function () {
         var pluginHooks = this.hooks = new HookCollection();
-        pluginHooks.addNoop("plainLinkText");  // given a URL that was encountered by itself (without markup), should return the link text that's to be given to this link
-        pluginHooks.addNoop("preConversion");  // called with the orignal text as given to makeHtml. The result of this plugin hook is the actual markdown source that will be cooked
-        pluginHooks.addNoop("postConversion"); // called with the final cooked HTML code. The result of this plugin hook is the actual output of makeHtml
+
+        // given a URL that was encountered by itself (without markup), should return the link text that's to be given to this link
+        pluginHooks.addNoop("plainLinkText");
+
+        // called with the orignal text as given to makeHtml. The result of this plugin hook is the actual markdown source that will be cooked
+        pluginHooks.addNoop("preConversion");
+
+        // called with the text once all normalizations have been completed (tabs to spaces, line endings, etc.), but before any conversions have
+        pluginHooks.addNoop("postNormalization");
+
+        // Called with the text before / after creating block elements like code blocks and lists. Note that this is called recursively
+        // with inner content, e.g. it's called with the full text, and then only with the content of a blockquote. The inner
+        // call will receive outdented text.
+        pluginHooks.addNoop("preBlockGamut");
+        pluginHooks.addNoop("postBlockGamut");
+
+        // called with the text of a single block element before / after the span-level conversions (bold, code spans, etc.) have been made
+        pluginHooks.addNoop("preSpanGamut");
+        pluginHooks.addNoop("postSpanGamut");
+
+        // called with the final cooked HTML code. The result of this plugin hook is the actual output of makeHtml
+        pluginHooks.addNoop("postConversion");
 
         //
         // Private state of the converter instance:
@@ -133,7 +156,7 @@ else
             // Don't do that.
             if (g_urls)
                 throw new Error("Recursive call to converter.makeHtml");
-        
+
             // Create the private state objects.
             g_urls = new SaveHash();
             g_titles = new SaveHash();
@@ -168,6 +191,8 @@ else
             // match consecutive blank lines with /\n+/ instead of something
             // contorted like /[ \t]*\n+/ .
             text = text.replace(/^[ \t]+$/mg, "");
+
+            text = pluginHooks.postNormalization(text);
 
             // Turn block-level HTML blocks into hash entries
             text = _HashHTMLBlocks(text);
@@ -305,7 +330,7 @@ else
             text = text.replace(/^(<(p|div|h[1-6]|blockquote|pre|table|dl|ol|ul|script|noscript|form|fieldset|iframe|math)\b[^\r]*?.*<\/\2>[ \t]*(?=\n+)\n)/gm, hashElement);
 
             // Special case just for <hr />. It was easier to make a special case than
-            // to make the other regex more complicated.  
+            // to make the other regex more complicated.
 
             /*
             text = text.replace(/
@@ -379,11 +404,16 @@ else
             return blockText;
         }
 
+        var blockGamutHookCallback = function (t) { return _RunBlockGamut(t); }
+
         function _RunBlockGamut(text, doNotUnhash) {
             //
             // These are all the transformations that form block-level
             // tags like paragraphs, headers, and list items.
             //
+
+            text = pluginHooks.preBlockGamut(text, blockGamutHookCallback);
+
             text = _DoHeaders(text);
 
             // Do Horizontal Rules:
@@ -395,6 +425,8 @@ else
             text = _DoLists(text);
             text = _DoCodeBlocks(text);
             text = _DoBlockQuotes(text);
+
+            text = pluginHooks.postBlockGamut(text, blockGamutHookCallback);
 
             // We already ran _HashHTMLBlocks() before, in Markdown(), but that
             // was to escape raw HTML in the original Markdown source. This time,
@@ -412,6 +444,8 @@ else
             // tags like paragraphs, headers, and list items.
             //
 
+            text = pluginHooks.preSpanGamut(text);
+
             text = _DoCodeSpans(text);
             text = _EscapeSpecialCharsWithinTagAttributes(text);
             text = _EncodeBackslashEscapes(text);
@@ -425,14 +459,16 @@ else
             // Must come after _DoAnchors(), because you can use < and >
             // delimiters in inline links like [this](<url>).
             text = _DoAutoLinks(text);
-            
+
             text = text.replace(/~P/g, "://"); // put in place to prevent autolinking; reset now
-            
+
             text = _EncodeAmpsAndAngles(text);
             text = _DoItalicsAndBold(text);
 
             // Do hard breaks:
             text = text.replace(/  +\n/g, " <br>\n");
+
+            text = pluginHooks.postSpanGamut(text);
 
             return text;
         }
@@ -443,7 +479,7 @@ else
             // don't conflict with their use in Markdown for code, italics and strong.
             //
 
-            // Build a regex to find HTML tags and comments.  See Friedl's 
+            // Build a regex to find HTML tags and comments.  See Friedl's
             // "Mastering Regular Expressions", 2nd Ed., pp. 200-201.
 
             // SE: changed the comment part of the regex
@@ -515,9 +551,9 @@ else
                         (?:
                             \([^)]*\)       // allow one level of (correctly nested) parens (think MSDN)
                             |
-                            [^()]
+                            [^()\s]
                         )*?
-                    )>?                
+                    )>?
                     [ \t]*
                     (                       // $5
                         (['"])              // quote char = $6
@@ -530,7 +566,7 @@ else
             /g, writeAnchorTag);
             */
 
-            text = text.replace(/(\[((?:\[[^\]]*\]|[^\[\]])*)\]\([ \t]*()<?((?:\([^)]*\)|[^()])*?)>?[ \t]*((['"])(.*?)\6[ \t]*)?\))/g, writeAnchorTag);
+            text = text.replace(/(\[((?:\[[^\]]*\]|[^\[\]])*)\]\([ \t]*()<?((?:\([^)]*\)|[^()\s])*?)>?[ \t]*((['"])(.*?)\6[ \t]*)?\))/g, writeAnchorTag);
 
             //
             // Last, handle reference-style shortcuts: [link text]
@@ -656,7 +692,7 @@ else
 
             return text;
         }
-        
+
         function attributeEncode(text) {
             // unconditionally replace angle brackets here -- what ends up in an attribute (e.g. alt or title)
             // never makes sense to have verbatim HTML in it (and the sanitizer would totally break it)
@@ -689,7 +725,7 @@ else
                     return whole_match;
                 }
             }
-            
+
             alt_text = escapeCharacters(attributeEncode(alt_text), "*_[]()");
             url = escapeCharacters(url, "*_");
             var result = "<img src=\"" + url + "\" alt=\"" + alt_text + "\"";
@@ -713,7 +749,7 @@ else
             // Setext-style headers:
             //  Header 1
             //  ========
-            //  
+            //
             //  Header 2
             //  --------
             //
@@ -754,7 +790,7 @@ else
             return text;
         }
 
-        function _DoLists(text) {
+        function _DoLists(text, isInsideParagraphlessListItem) {
             //
             // Form HTML ordered (numbered) and unordered (bulleted) lists.
             //
@@ -794,7 +830,7 @@ else
                     var list = m1;
                     var list_type = (m2.search(/[*+-]/g) > -1) ? "ul" : "ol";
 
-                    var result = _ProcessListItems(list, list_type);
+                    var result = _ProcessListItems(list, list_type, isInsideParagraphlessListItem);
 
                     // Trim any trailing whitespace, to put the closing `</$list_type>`
                     // up on the preceding line, to get it past the current stupid
@@ -825,7 +861,7 @@ else
 
         var _listItemMarkers = { ol: "\\d+[.]", ul: "[*+-]" };
 
-        function _ProcessListItems(list_str, list_type) {
+        function _ProcessListItems(list_str, list_type, isInsideParagraphlessListItem) {
             //
             //  Process the contents of a single ordered or unordered list, splitting it
             //  into individual list items.
@@ -872,7 +908,7 @@ else
             //
             // We changed this to behave identical to MarkdownSharp. This is the constructed RegEx,
             // with {MARKER} being one of \d+[.] or [*+-], depending on list_type:
-        
+
             /*
             list_str = list_str.replace(/
                 (^[ \t]*)                       // leading whitespace = $1
@@ -901,9 +937,10 @@ else
                     }
                     else {
                         // Recursion for sub-lists:
-                        item = _DoLists(_Outdent(item));
+                        item = _DoLists(_Outdent(item), /* isInsideParagraphlessListItem= */ true);
                         item = item.replace(/\n$/, ""); // chomp(item)
-                        item = _RunSpanGamut(item);
+                        if (!isInsideParagraphlessListItem) // only the outer-most item should run this, otherwise it's run multiple times for the inner ones
+                            item = _RunSpanGamut(item);
                     }
                     last_item_had_a_double_newline = ends_with_double_newline;
                     return "<li>" + item + "</li>\n";
@@ -920,7 +957,7 @@ else
         function _DoCodeBlocks(text) {
             //
             //  Process Markdown `<pre><code>` blocks.
-            //  
+            //
 
             /*
             text = text.replace(/
@@ -938,7 +975,7 @@ else
             // attacklab: sentinel workarounds for lack of \A and \Z, safari\khtml bug
             text += "~0";
 
-            text = text.replace(/(?:\n\n|^)((?:(?:[ ]{4}|\t).*\n+)+)(\n*[ ]{0,3}[^ \t\n]|(?=~0))/g,
+            text = text.replace(/(?:\n\n|^\n?)((?:(?:[ ]{4}|\t).*\n+)+)(\n*[ ]{0,3}[^ \t\n]|(?=~0))/g,
                 function (wholeMatch, m1, m2) {
                     var codeblock = m1;
                     var nextChar = m2;
@@ -948,7 +985,7 @@ else
                     codeblock = codeblock.replace(/^\n+/g, ""); // trim leading newlines
                     codeblock = codeblock.replace(/\n+$/g, ""); // trim trailing whitespace
 
-                    codeblock = '<pre class="prettyprint linenums"><code>' + codeblock + '\n</code></pre>';
+                    codeblock = "<pre><code>" + codeblock + "\n</code></pre>";
 
                     return "\n\n" + codeblock + "\n\n" + nextChar;
                 }
@@ -968,26 +1005,26 @@ else
         function _DoCodeSpans(text) {
             //
             // * Backtick quotes are used for <code></code> spans.
-            // 
+            //
             // * You can use multiple backticks as the delimiters if you want to
             //   include literal backticks in the code span. So, this input:
-            //     
+            //
             //      Just type ``foo `bar` baz`` at the prompt.
-            //     
+            //
             //   Will translate to:
-            //     
+            //
             //      <p>Just type <code>foo `bar` baz</code> at the prompt.</p>
-            //     
+            //
             //   There's no arbitrary limit to the number of backticks you
             //   can use as delimters. If you need three consecutive backticks
             //   in your code, use four for delimiters, etc.
             //
             // * You can use spaces to get literal backticks at the edges:
-            //     
+            //
             //      ... type `` `bar` `` ...
-            //     
+            //
             //   Turns to:
-            //     
+            //
             //      ... type <code>`bar`</code> ...
             //
 
@@ -1120,7 +1157,7 @@ else
 
             var grafs = text.split(/\n{2,}/g);
             var grafsOut = [];
-            
+
             var markerRe = /~K(\d+)K/;
 
             //
@@ -1169,7 +1206,7 @@ else
             text = text.replace(/&(?!#?[xX]?(?:[0-9a-fA-F]+|\w+);)/g, "&amp;");
 
             // Encode naked <'s
-            text = text.replace(/<(?![a-z\/?\$!])/gi, "&lt;");
+            text = text.replace(/<(?![a-z\/?!]|~D)/gi, "&lt;");
 
             return text;
         }
@@ -1195,17 +1232,60 @@ else
             return text;
         }
 
+        var charInsideUrl = "[-A-Z0-9+&@#/%?=~_|[\\]()!:,.;]",
+            charEndingUrl = "[-A-Z0-9+&@#/%=~_|[\\])]",
+            autoLinkRegex = new RegExp("(=\"|<)?\\b(https?|ftp)(://" + charInsideUrl + "*" + charEndingUrl + ")(?=$|\\W)", "gi"),
+            endCharRegex = new RegExp(charEndingUrl, "i");
+
+        function handleTrailingParens(wholeMatch, lookbehind, protocol, link) {
+            if (lookbehind)
+                return wholeMatch;
+            if (link.charAt(link.length - 1) !== ")")
+                return "<" + protocol + link + ">";
+            var parens = link.match(/[()]/g);
+            var level = 0;
+            for (var i = 0; i < parens.length; i++) {
+                if (parens[i] === "(") {
+                    if (level <= 0)
+                        level = 1;
+                    else
+                        level++;
+                }
+                else {
+                    level--;
+                }
+            }
+            var tail = "";
+            if (level < 0) {
+                var re = new RegExp("\\){1," + (-level) + "}$");
+                link = link.replace(re, function (trailingParens) {
+                    tail = trailingParens;
+                    return "";
+                });
+            }
+            if (tail) {
+                var lastChar = link.charAt(link.length - 1);
+                if (!endCharRegex.test(lastChar)) {
+                    tail = lastChar + tail;
+                    link = link.substr(0, link.length - 1);
+                }
+            }
+            return "<" + protocol + link + ">" + tail;
+        }
+
         function _DoAutoLinks(text) {
 
             // note that at this point, all other URL in the text are already hyperlinked as <a href=""></a>
             // *except* for the <http://www.foo.com> case
 
             // automatically add < and > around unadorned raw hyperlinks
-            // must be preceded by space/BOF and followed by non-word/EOF character    
-            text = text.replace(/(^|\s)(https?|ftp)(:\/\/[-A-Z0-9+&@#\/%?=~_|\[\]\(\)!:,\.;]*[-A-Z0-9+&@#\/%=~_|\[\]])($|\W)/gi, "$1<$2$3>$4");
+            // must be preceded by a non-word character (and not by =" or <) and followed by non-word/EOF character
+            // simulating the lookbehind in a consuming way is okay here, since a URL can neither and with a " nor
+            // with a <, so there is no risk of overlapping matches.
+            text = text.replace(autoLinkRegex, handleTrailingParens);
 
             //  autolink anything like <http://example.com>
-            
+
             var replacer = function (wholematch, m1) { return "<a href=\"" + m1 + "\">" + pluginHooks.plainLinkText(m1) + "</a>"; }
             text = text.replace(/<((https?|ftp):[^'">\s]+)>/gi, replacer);
 
@@ -1223,21 +1303,13 @@ else
             /gi, _DoAutoLinks_callback());
             */
 
-            var email_replacer = function(wholematch, m1) {
-                var mailto = 'mailto:'
-                var link
-                var email
-                if (m1.substring(0, mailto.length) != mailto){
-                    link = mailto + m1;
-                    email = m1;
-                } else {
-                    link = m1;
-                    email = m1.substring(mailto.length, m1.length);
+            /* disabling email autolinking, since we don't do that on the server, either
+            text = text.replace(/<(?:mailto:)?([-.\w]+\@[-a-z0-9]+(\.[-a-z0-9]+)*\.[a-z]+)>/gi,
+                function(wholeMatch,m1) {
+                    return _EncodeEmailAddress( _UnescapeSpecialChars(m1) );
                 }
-                return "<a href=\"" + link + "\">" + pluginHooks.plainLinkText(email) + "</a>";
-            }
-            text = text.replace(/<((?:mailto:)?([-.\w]+\@[-a-z0-9]+(\.[-a-z0-9]+)*\.[a-z]+))>/gi, email_replacer);
-
+            );
+            */
             return text;
         }
 
@@ -1295,7 +1367,7 @@ else
 
         var _problemUrlChars = /(?:["'*()[\]:]|~D)/g;
 
-        // hex-encodes some unusual "problem" chars in URLs to avoid URL detection problems 
+        // hex-encodes some unusual "problem" chars in URLs to avoid URL detection problems
         function encodeProblemUrlChars(url) {
             if (!url)
                 return "";
@@ -1307,11 +1379,7 @@ else
                     return "%24";
                 if (match == ":") {
                     if (offset == len - 1 || /[0-9\/]/.test(url.charAt(offset + 1)))
-                        return ":";
-                    if (url.substring(0, 'mailto:'.length) === 'mailto:')
-                        return ":";
-                    if (url.substring(0, 'magnet:'.length) === 'magnet:')
-                        return ":";
+                        return ":"
                 }
                 return "%" + match.charCodeAt(0).toString(16);
             });
