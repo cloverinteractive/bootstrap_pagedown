@@ -5,6 +5,8 @@ $ ->
   if $( "#wmd-input" ).length > 0
     window.converter = Markdown.getSanitizingConverter()
     window.editor    = new Markdown.Editor converter
+    Markdown.Extra.init converter
+
     editor.run()
 
     ## Create editor toolbar buttons
