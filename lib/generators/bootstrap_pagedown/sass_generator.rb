@@ -8,7 +8,7 @@ module BootstrapPagedown
       desc "Generates the editor stylesheet"
 
       def copy_sass
-        directory File.expand_path( File.join( VENDOR_PATH ), __FILE__ ), 'app/assets/stylesheets'
+        directory File.expand_path( VENDOR_PATH, __FILE__ ), 'app/assets/stylesheets'
       end
     end
   end
