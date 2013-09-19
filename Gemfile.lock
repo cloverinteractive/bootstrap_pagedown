@@ -50,6 +50,9 @@ GEM
     diff-lcs (1.2.4)
     erubis (2.7.0)
     execjs (2.0.1)
+    generator_spec (0.9.0)
+      activerecord (>= 3.0, <= 4.0)
+      railties (>= 3.0, <= 4.0)
     hike (1.2.3)
     i18n (0.6.5)
     jquery-rails (3.0.1)
@@ -144,6 +147,7 @@ DEPENDENCIES
   bootstrap-sass
   bootstrap_pagedown!
   coffee-rails (~> 4.0.0)
+  generator_spec
   jquery-rails
   pry-rails
   quiet_assets

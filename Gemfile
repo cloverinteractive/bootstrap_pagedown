@@ -29,4 +29,5 @@ gem 'pry-rails'
 
 group :test do
   gem 'simplecov', require: false
+  gem 'generator_spec'
 end

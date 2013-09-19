@@ -84,6 +84,14 @@ that is because by default Pagedown looks for those element attribute values, ho
 [Pagedown API](https://code.google.com/p/pagedown/wiki/PageDown). I other words in order to have more than one editor in the same page you'll obviously have to
 change the element attributes and the use the Pagedown API to create every aditional editor.
 
+## Stylesheets
+
+If you need to change something on the stylesheets you don't need to start from scratch, you can simply generate the sass file with the sass generator as follows:
+
+`rails g bootstrap_pagedown:sass`
+
+This will generate a copy of bootstrap_pagedown styles into `app/assets/stylesheets`.
+
 ## Running the test suite
 
 Simply clone this project (or pull) and then run `rake`
