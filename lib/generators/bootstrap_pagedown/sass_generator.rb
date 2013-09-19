@@ -1,14 +1,14 @@
 module BootstrapPagedown
   module Generators
     class SassGenerator < ::Rails::Generators::Base
-      VENDOR_PATH = '../../../../vendor/assets/stylesheets/'
+      VENDOR_PATH = File.expand_path( '../../../../vendor/assets/stylesheets/', __FILE__ )
 
-      source_root File.expand_path( VENDOR_PATH, __FILE__ )
+      source_root VENDOR_PATH
 
       desc "Generates the editor stylesheet"
 
       def copy_sass
-        directory File.expand_path( VENDOR_PATH, __FILE__ ), 'app/assets/stylesheets'
+        directory VENDOR_PATH, 'app/assets/stylesheets'
       end
     end
   end
