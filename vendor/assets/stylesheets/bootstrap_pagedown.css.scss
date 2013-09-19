@@ -13,42 +13,41 @@
 
 .wmd-preview {
   width: 100%;
-  box-sizing: border-box;
-  -webkit-box-sizing:border-box;
-  -moz-box-sizing: border-box;
-  -ms-box-sizing: border-box;
+  box-sizing:         border-box;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing:    border-box;
+  -ms-box-sizing:     border-box;
 }
 
-.wmd-panel .btn-toolbar {
+.wmd-panel .wmd-button-bar {
   margin-bottom: 0;
   padding: 0;
   width: 100%;
 }
 
-.icon-link,
-.icon-blockquote,
-.icon-code,
-.icon-bullet-list,
-.icon-list,
-.icon-header,
-.icon-hr-line,
-.icon-undo {
-  background-image: url(/assets/Markdown.Editor.Icons.png);
+.wmd-button-row {
+  list-style-type: none;
+  margin: 10px 0px;
 }
 
-.icon-link              { background-position: 0      0; }
-.icon-blockquote        { background-position: -24px  0; }
-.icon-code              { background-position: -48px  0; }
-.icon-bullet-list       { background-position: -72px  0; }
-.icon-list              { background-position: -96px  0; }
-.icon-header            { background-position: -120px 0; }
-.icon-hr-line           { background-position: -144px 0; }
-.icon-undo              { background-position: -168px 0; }
+.wmd-button {
+  float: left;
 
-.wmd-prompt-background
-{
-  background-color: Black;
+  .icon { background-image: url( /assets/Markdown.Editor.Icons.png ); }
+
+  .wmd-spacer { background-image: none; }
+
+  .icon-link      { background-position: 0 0; }
+  .icon-quote     { background-position: -24px  0; }
+  .icon-code      { background-position: -48px  0; }
+  .icon-ulist     { background-position: -72px  0; }
+  .icon-olist     { background-position: -96px  0; }
+  .icon-heading   { background-position: -120px 0; }
+  .icon-hr        { background-position: -144px 0; }
+  .icon-undo      { background-position: -168px 0; }
 }
+
+.wmd-prompt-background { background-color: #000; }
 
 .wmd-prompt-dialog
 {
