@@ -49,9 +49,40 @@ You may also add attributes to the generated text area as needed by simply addin
 
 The previous example would add `data-name="editor"` to the editor textarea element.
 
-### Note
+### Custom options supported:
 
-You should only use one editor per page since `Pagedown`'s Javascript relies on the HTML id attribute for most of it's behavior.
+By default bootstrap_pagedown will create the needed HTML elements to render a functional editor with a button bar and a preview div.
+However you can change the different element classes, ids and even skip the preview div by passing different options to the `pagedown_editor`
+method, here's the hash with different options and it's default values:
+
+```ruby
+{
+  skip_preview:     false,             # Whether or not we should skip the preview div, skipping this will render an editor without HTML preview
+  panel_id:         '',                # HTML id of the editor panel div
+  panel_class:      'wmd-panel',       # HTML class of the editor panel div
+  button_bar_id:    'wmd-button-bar',  # HTML id of the editor's button bar div
+  button_bar_class: '',                # HTML class of the editor's button bar div
+  editor_id:        'wmd-input',       # HTML if of the editor textarea
+  editor_class:     'wmd-input',       # HTML class of the editor textarea
+  preview_id:       'wmd-preview',     # HTML id of the preview div
+  preview_class:    '',                # HTML class of the preview div
+}
+```
+
+This is a the default generated HTML, note that name will change depending on your form builder and method name.
+
+```html
+<div class="wmd-panel">
+  <div id="wmd-button-bar"></div>
+  <textarea class="wmd-input" id="wmd-input" name="test[test]"></textarea>
+  <div id="wmd-preview"></div>
+</div>
+```
+
+If you change the any of the default ids or classes on the HTML elements the `pagedown_editor` will render the correct HTML, but the editor won't render
+that is because by default Pagedown looks for those element attribute values, however you can still get the editor to render and behave correctly through the
+[Pagedown API](https://code.google.com/p/pagedown/wiki/PageDown). I other words in order to have more than one editor in the same page you'll obviously have to
+change the element attributes and the use the Pagedown API to create every aditional editor.
 
 ## Running the test suite
 

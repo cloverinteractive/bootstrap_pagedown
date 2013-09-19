@@ -22,6 +22,7 @@ gem 'coffee-rails', '~> 4.0.0'
 gem 'bootstrap-sass'
 
 gem 'better_errors'
+gem 'quiet_assets'
 
 gem 'rspec-rails', group: [ :test, :development ]
 gem 'pry-rails'
