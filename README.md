@@ -25,6 +25,42 @@ Then add it to your Asset Pipeline manifest files:
 */
 ```
 
+## Creating the editor
+
+Simply add this to the javascript file where you wish to create the editor:
+
+```javascript
+var converter = Markdown.getSanitizingConverter();
+var editor    = new Markdown.Editor( converter );
+
+editor.run();
+```
+
+Or in coffeescript:
+
+```coffeescript
+converter = Markdown.getSanitizingConverter()
+editor    = new Markdown.Editor converter
+
+editor.run();
+```
+
+### Pagedown extras
+
+If you wish to use [pagedown-extra](https://github.com/jmcmanus/pagedown-extra) simply add this line before `editor.run()`:
+
+```javascript
+Markdown.Extra.init( converter );
+```
+
+Or in coffeescript:
+
+```coffeescript
+Markdown.Extra.init converter
+```
+
+Keep in mind that `converter` should be replaced by whatever you named your converter variable to.
+
 ## Requirements
 
 This plugin requires bootstrap to work as intended.
