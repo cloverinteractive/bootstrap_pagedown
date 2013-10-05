@@ -15,3 +15,13 @@
 //= require bootstrap
 //= require bootstrap_pagedown
 //= require_tree .
+
+$(function() {
+  if ( $("#wmd-input").length > 0 ) {
+    var converter = Markdown.getSanitizingConverter();
+    var editor    = new Markdown.Editor( converter );
+
+    Markdown.Extra.init( converter );
+    editor.run();
+  }
+});
