@@ -56,6 +56,40 @@
 </pre></div>
 
 <h2>
+<a name="creating-the-editor" class="anchor" href="#creating-the-editor"><span class="octicon octicon-link"></span></a>Creating the editor</h2>
+
+<p>Simply add this to the javascript file where you wish to create the editor:</p>
+
+<div class="highlight highlight-javascript"><pre><span class="kd">var</span> <span class="nx">converter</span> <span class="o">=</span> <span class="nx">Markdown</span><span class="p">.</span><span class="nx">getSanitizingConverter</span><span class="p">();</span>
+<span class="kd">var</span> <span class="nx">editor</span>    <span class="o">=</span> <span class="k">new</span> <span class="nx">Markdown</span><span class="p">.</span><span class="nx">Editor</span><span class="p">(</span> <span class="nx">converter</span> <span class="p">);</span>
+
+<span class="nx">editor</span><span class="p">.</span><span class="nx">run</span><span class="p">();</span>
+</pre></div>
+
+<p>Or in coffeescript:</p>
+
+<div class="highlight highlight-coffeescript"><pre><span class="nv">converter = </span><span class="nx">Markdown</span><span class="p">.</span><span class="nx">getSanitizingConverter</span><span class="p">()</span>
+<span class="nv">editor    = </span><span class="k">new</span> <span class="nx">Markdown</span><span class="p">.</span><span class="nx">Editor</span> <span class="nx">converter</span>
+
+<span class="nx">editor</span><span class="p">.</span><span class="nx">run</span><span class="p">();</span>
+</pre></div>
+
+<h3>
+<a name="pagedown-extras" class="anchor" href="#pagedown-extras"><span class="octicon octicon-link"></span></a>Pagedown extras</h3>
+
+<p>If you wish to use <a href="https://github.com/jmcmanus/pagedown-extra">pagedown-extra</a> simply add this line before <code>editor.run()</code>:</p>
+
+<div class="highlight highlight-javascript"><pre><span class="nx">Markdown</span><span class="p">.</span><span class="nx">Extra</span><span class="p">.</span><span class="nx">init</span><span class="p">(</span> <span class="nx">converter</span> <span class="p">);</span>
+</pre></div>
+
+<p>Or in coffeescript:</p>
+
+<div class="highlight highlight-coffeescript"><pre><span class="nx">Markdown</span><span class="p">.</span><span class="nx">Extra</span><span class="p">.</span><span class="nx">init</span> <span class="nx">converter</span>
+</pre></div>
+
+<p>Keep in mind that <code>converter</code> should be replaced by whatever you named your converter variable to.</p>
+
+<h2>
 <a name="requirements" class="anchor" href="#requirements"><span class="octicon octicon-link"></span></a>Requirements</h2>
 
 <p>This plugin requires bootstrap to work as intended.</p>
