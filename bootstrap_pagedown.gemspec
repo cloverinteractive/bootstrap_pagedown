@@ -7,6 +7,7 @@ require "bootstrap_pagedown/version"
 Gem::Specification.new do |s|
   s.name        = "bootstrap_pagedown"
   s.version     = BootstrapPagedown::VERSION
+  s.license     = 'MIT'
   s.authors     = ["Enrique Vidal"]
   s.email       = ["enrique@cloverinteractive.com"]
   s.homepage    = "https://github.com/cloverinteractive/bootstrap_pagedown"
